@@ -1,0 +1,161 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+ 
+rule "Manzelia"
+    //lock-on-active true
+    no-loop true
+    when
+    $f1 : Message(n1 : name,
+    			rulestr =="je rodic",
+    			n2 : name2 )
+    $f2 : Message(n3 : name != n1,
+    			rulestr == "je rodic",
+    			n4: name2 == n2)
+   eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  			
+    			
+    			
+    			
+    then
+    insert(new Message(n1, "su manzelia", n3));
+    System.out.println(n1 + " " +n3 + " su manzelia");    
+        
+end
+
+rule "Surodenci1"
+no-loop true
+//lock-on-active true
+when
+	$f1 : Message(n1 : name2,
+    			rulestr =="je rodic",
+    			n2 : name )
+    $f2 : Message(n3 : name2 != n1,
+    			rulestr == "je rodic",
+    			n4: name == n2)
+     eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  
+
+ 
+then
+Message mes = new Message(n1, "je surodenec", n3);
+insert(mes);
+
+System.out.println(n1 +" "+ n3 + " surodenci");
+end
+
+rule "Surodenci2"
+no-loop true
+//lock-on-active true
+when
+	$f1 : Message(n1 : name,
+    			rulestr =="je surodenec",
+    			n2 : name2 )
+    $f2 : Message(n3 : name != n1,
+    			rulestr == "je surodenec",
+    			n4: name2 == n2)
+    		
+    eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  
+
+
+then
+//Message mes =new Message(n3, "je surodenec", n1);
+insert(new Message(n1, "je surodenec", n3));
+
+System.out.println(n3 + " " + n1 + " surodenci");
+end
+
+rule "Dieta"
+//no-loop true
+lock-on-active true
+when
+	$f1 : Message(n1 : name,
+					rulestr == "je rodic",
+					n2: name2)
+	$f2 : Message(n3 : name==n2,
+					rulestr == "je surodenec",
+					n4: name2 )
+					
+					eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  
+
+then
+insert(new Message(n1, "je rodic", n4));
+System.out.println(n1+ " je rodic "+n4);
+end
+
+rule "Dieta2"
+//no-loop true
+lock-on-active true
+when
+	$f1 : Message(n1 : name,
+					rulestr == "je rodic",
+					n2: name2)
+	$f2 : Message(n3 : name2==n2,
+					rulestr == "je surodenec",
+					n4: name )
+					
+			/*		eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  */
+
+then
+insert(new Message(n1, "je rodic", n4));
+System.out.println(n1+ " je rodic "+ n4);
+end
+
+rule "Rodic-Manzelia"
+no-loop true
+//lock-on-active true
+when 
+$f1 : Message(n1 : name,
+    			rulestr =="je rodic",
+    			n2 : name2 )
+    $f2 : Message(n3 : name2 != n1,
+    			rulestr == "su manzelia",
+    			n4: name == n1)
+    
+    eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) ) 
+
+ 
+then
+Message mes = new Message(n3, "je rodic", n2);
+System.out.println(n3 + " je rodic " +n2); 
+insert(mes);
+end
+
+rule "rodic manzelia2"
+no-loop true
+lock-on-active true
+when
+$f1 : Message(n1 : name,
+    			rulestr =="je rodic",
+    			n2 : name2 )
+    $f2 : Message(n3 : name != n1,
+    			rulestr == "su manzelia",
+    			n4 : name2 == n1)
+     eval( System.identityHashCode(
+$f1 ) > System.identityHashCode( $f2 ) )  
+
+ 
+then
+
+Message mes = new Message(n3, "je rodic", n2);
+System.out.println(n1+ " je rodic " +n2); 
+insert(mes);
+end
+
+/*rule "remove"
+when 
+
+then
+retract(new Message())
+end*/
+/*
+rule "modify"
+when
+
+then
+modify(new Message())
+end*/
